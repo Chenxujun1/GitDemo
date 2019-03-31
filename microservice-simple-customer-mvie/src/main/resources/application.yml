@@ -1,0 +1,15 @@
+
+server:
+  port: 22223
+  servlet:
+    context-path: /Movie-Application
+spring:
+  application:
+    name: movie
+  datasource:
+    driver-class-name:  com.mysql.jdbc.Driver
+    url:  jdbc:mysql://localhost:3306/study?useUnicode=true&characterEncoding=UTF-8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC
+    username: root
+    password: admin
+User:
+  userServiceUrl: http://localhost:22222/Cloud-User/user/getUserById/
