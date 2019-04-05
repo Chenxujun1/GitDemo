@@ -9,6 +9,8 @@ server:
 mybatis:
   mapper-locations: classpath:config/mybatis/mapper/mapper_*.xml
   type-aliases-package: cloud.entity
-management:
-  security:
-    enabled: false
+logging:
+  config: classpath:config/log/log.xml
+  level:
+    root: debug
+

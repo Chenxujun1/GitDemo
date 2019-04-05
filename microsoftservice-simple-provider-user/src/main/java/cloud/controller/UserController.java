@@ -3,12 +3,13 @@ package cloud.controller;
 import cloud.entity.User;
 import cloud.service.IUserService;
 import cloud.util.HttpClientUtils;
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -32,5 +33,11 @@ public class UserController {
         param.put("id", "046314c6530611e996ef005056c00001");
         String response = httpClientUtils.doPost("http://localhost:22223/Movie-Application/user/findUserById", param);
         return  response;
+    }
+
+    @RequestMapping(value = "/findUsersByPage", method = RequestMethod.GET)
+    public List<User> findUsersByPage(@RequestParam(name = "currentPage", defaultValue = "1") int currentPage,
+                                          @RequestParam(name = "pageSize", defaultValue = "10") int pageSize){
+        return userService.findUsersByPage(currentPage, pageSize);
     }
 }

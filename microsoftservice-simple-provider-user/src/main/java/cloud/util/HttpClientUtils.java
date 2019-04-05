@@ -5,22 +5,53 @@ import org.apache.http.HttpEntity;
 import org.apache.http.HttpStatus;
 import org.apache.http.NameValuePair;
 import org.apache.http.StatusLine;
-import org.apache.http.client.HttpClient;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
+import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
-import org.springframework.stereotype.Component;
 
 import java.io.*;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.*;
 
+/**
+ * 自定义Http链接
+ */
 public class HttpClientUtils {
+    private static PoolingHttpClientConnectionManager httpClientConnectionManager = null;
+    private static RequestConfig requestConfig = null;
+    static {
+        httpClientConnectionManager = new PoolingHttpClientConnectionManager();
+        httpClientConnectionManager.setMaxTotal(200);
+        httpClientConnectionManager.setDefaultMaxPerRoute(200);
+
+        requestConfig = RequestConfig.custom()
+                .setConnectionRequestTimeout(3*1000)
+                .setConnectionRequestTimeout(6*1000)
+                .setSocketTimeout(6*1000)
+                .build();
+    }
+
+    /**
+     * Post
+     * @param url
+     * @param param
+     * @return
+     */
     public String doPost(String url, Map<String, String> param){
-        CloseableHttpClient closeableHttpClient = HttpClients.createDefault();
+        CloseableHttpClient closeableHttpClient = HttpClients.custom()
+                .setConnectionManager(httpClientConnectionManager)
+                .setDefaultRequestConfig(requestConfig)
+                .build();
         CloseableHttpResponse closeableHttpResponse = null;
         HttpPost httpPost = new HttpPost(url);
         List<NameValuePair> nameValuePairs = new ArrayList<>();
@@ -43,7 +74,6 @@ public class HttpClientUtils {
                 while((response = br.readLine()) != null){
                     response.concat(response);
                 }
-                //String response = EntityUtils.toString(responseEntity, Charsets.UTF_8);
                 return  response;
             }
         } catch (IOException e) {
@@ -58,5 +88,49 @@ public class HttpClientUtils {
             }
         }
         return "";
+    }
+
+    /**
+     * Get
+     * @param url
+     * @param param
+     * @return
+     */
+    public String doGet(String url, Map<String, Object> param){
+        String response = "";
+        CloseableHttpResponse httpResponse = null;
+        CloseableHttpClient httpClient = HttpClients.custom()
+                .setConnectionManager(httpClientConnectionManager)
+                .setDefaultRequestConfig(requestConfig)
+                .build();
+        List<NameValuePair> nameValuePairs = new ArrayList<>();
+        if(null != param){
+            Set<Map.Entry<String, Object>> entries = param.entrySet();
+            for(Map.Entry<String, Object> entry : entries){
+                nameValuePairs.add(new BasicNameValuePair(entry.getKey(), entry.getValue().toString()));
+            }
+        }
+        try {
+            URIBuilder uriBuilder = new URIBuilder(url);
+            uriBuilder.addParameters(nameValuePairs);
+            HttpGet httpGet = new HttpGet(uriBuilder.build());
+            httpResponse = httpClient.execute(httpGet);
+            if(httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_OK){
+                response = EntityUtils.toString(httpResponse.getEntity());
+            }
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        } catch (IOException e){
+            e.printStackTrace();
+        } finally {
+            if(null != httpResponse){
+                try {
+                    httpResponse.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return response;
     }
 }
