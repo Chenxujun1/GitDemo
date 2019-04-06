@@ -6,6 +6,12 @@ spring:
     driver-class-name: com.mysql.jdbc.Driver
     username: root
     password: admin
+  redis:
+    host: 127.0.0.1
+    port: 6379
+    jedis:
+      pool:
+        max-idle: 50
 logging:
   level:
     root: debug

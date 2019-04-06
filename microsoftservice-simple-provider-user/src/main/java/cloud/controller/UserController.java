@@ -40,7 +40,7 @@ public class UserController {
     @RequestMapping(value = "/findUsersByPage", method = RequestMethod.GET)
     public List<User> findUsersByPage(@RequestParam(name = "currentPage", defaultValue = "1") int currentPage,
                                           @RequestParam(name = "pageSize", defaultValue = "10") int pageSize){
-        redisUtil.set("123","123");
+        redisUtil.set("123","123",1);
         return userService.findUsersByPage(currentPage, pageSize);
     }
 }

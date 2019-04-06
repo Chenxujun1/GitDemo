@@ -47,7 +47,6 @@ public class CommonContoller {
             String fileName = file.getOriginalFilename();
             System.out.println(fileName);
         }
-
         /*List<MultipartFile> files = ((MultipartHttpServletRequest)request).getFiles("files");
         for(MultipartFile file : files){
             String fileName = file.getOriginalFilename();
