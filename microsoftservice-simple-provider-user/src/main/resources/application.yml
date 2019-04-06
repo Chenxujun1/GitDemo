@@ -1,16 +1,16 @@
 spring:
-  datasource:
-    url: jdbc:mysql://localhost:3306/study?useUnicode=true&characterEncoding=UTF-8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC
-    username: root
-    password: admin
-    driver-class-name: com.mysql.jdbc.Driver
+  profiles:
+    active: dev
 server:
-  port: 22222
+  servlet:
+    context-path: /Microsoft-User
 mybatis:
   mapper-locations: classpath:config/mybatis/mapper/mapper_*.xml
   type-aliases-package: cloud.entity
 logging:
   config: classpath:config/log/log.xml
-  level:
-    root: debug
+fileupload:
+  bufferSize: 4800
+  fileDir:  E:\\file\\test
+  bufferDir:  E:\\file\\buffer
 

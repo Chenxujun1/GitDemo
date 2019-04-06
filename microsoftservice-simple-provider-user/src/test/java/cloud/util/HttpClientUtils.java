@@ -5,7 +5,6 @@ import org.apache.http.HttpEntity;
 import org.apache.http.HttpStatus;
 import org.apache.http.NameValuePair;
 import org.apache.http.StatusLine;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -18,8 +17,10 @@ import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 
-import java.io.*;
-import java.net.URI;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.URISyntaxException;
 import java.util.*;
 
@@ -55,9 +56,10 @@ public class HttpClientUtils {
         CloseableHttpResponse closeableHttpResponse = null;
         HttpPost httpPost = new HttpPost(url);
         List<NameValuePair> nameValuePairs = new ArrayList<>();
-        Set<Map.Entry<String, Object>> entries = param.entrySet();
-        for (Map.Entry<String, Object> entry : entries){
-            nameValuePairs.add(new BasicNameValuePair(entry.getKey(), entry.getValue().toString()));
+        Set<Map.Entry<String, Object>> set = param.entrySet();
+        Iterator<Map.Entry<String, Object>> iterator = set.iterator();
+        while (iterator.hasNext()){
+            nameValuePairs.add(new BasicNameValuePair(iterator.next().getKey(),iterator.next().getValue().toString()));
         }
         HttpEntity httpEntity = new UrlEncodedFormEntity(nameValuePairs, Charsets.UTF_8);
         httpPost.setEntity(httpEntity);
@@ -95,7 +97,7 @@ public class HttpClientUtils {
      * @param param
      * @return
      */
-    public String doGet(String url, Map<String, Object> param){
+    public static String doGet(String url, Map<String, Object> param){
         String response = "";
         CloseableHttpResponse httpResponse = null;
         CloseableHttpClient httpClient = HttpClients.custom()
